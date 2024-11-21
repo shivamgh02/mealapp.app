@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <style>
+        #user {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+
+        body {
+            background: url("bg.jpg");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-clip: padding-box;
+        }
+
+        * {
+            font-variant: small-caps;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            color: bisque;
+            text-shadow: 0 0 3px #000000, 0 0 5px #7c7c7d;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="body container">
+        <div id="user">
+            <h1>
+                🙍‍♂️<mark id="username"></mark>
+            </h1>
+            <button onclick="handleLogout()">Log Out</button>
+        </div>
+        <div id="profile container">
+            <a href="./index.html">
+                <button>back to home
+                </button>
+            </a>
+            <h1 id="name"></h1>
+            <mark id="misc">
+                <section id="area"></section>
+                <section id="category"></section>
+                <section id="tags"></section>
+            </mark>
+            <img src="" alt="" srcset="" id="thumb">
+            <br />
+            <a id="yt">check the reciepe on youtube </a>
+            <p id="instruct"></p>
+        </div>
+
+
+    </div>
+    <script>
+        if (localStorage.getItem("user")) {
+            document.getElementById("username").innerText = localStorage.getItem("user")
+        } else {
+            window.location = "./login.html"
+        }
+        function handleLogout() {
+            localStorage.removeItem("user")
+            window.location = "./login.html"
+        }
+        let item = ""
+        const searchParams = new URLSearchParams(window.location.search);
+        let profile = document.getElementById("profile")
+        async function generateBody() {
+            let val = searchParams.get('value');
+            let res = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${val}`)
+            let data = await res.json()
+            let meals = await data.meals;
+            if (meals == null) {
+                profile.innerHTML = " No Meals Found "
+                return;
+            } else {
+                let meal = meals[0];
+                document.getElementById("name").innerText = meal.strMeal
+                document.getElementById("category").innerText = meal.strCategory
+                document.getElementById("area").innerText = meal.strArea
+                document.getElementById("tags").innerText = meal.strTags
+                document.getElementById("instruct").innerText = meal.strInstructions
+                document.getElementById("thumb").src = meal.strMealThumb
+                document.getElementById("yt").setAttribute("href", meal.strYoutube)
+            }
+        }
+        if (searchParams.has('value')) {
+            generateBody()
+        } else {
+            profile.innerHTML = "No Value FOund "
+        }// price_descending
+
+    </script>
+</body>
+
+</html>
